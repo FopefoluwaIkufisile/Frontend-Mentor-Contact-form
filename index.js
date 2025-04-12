@@ -10,6 +10,22 @@ const error = document.querySelectorAll(".error");
 const radioError = document.querySelector(".query-type-container small");
 const consentError = document.querySelector(".consent-div small");
 
+
+if (localStorage.getItem("formdata")) {
+  const formData = JSON.parse(localStorage.getItem("formdata"));
+  firstname.value = formData["First name"] || "";
+  lastname.value = formData["Last name"] || "";
+  email.value = formData["Email Address"] || "";
+  message.value = formData.message || "";
+  consent.checked = formData.checkbox || false;
+
+  radioBtns.forEach((btn) => {
+    if (btn.id === formData.radioSelection) {
+      btn.checked = true;
+    }
+  });
+}
+
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
   let isValid = true;
@@ -52,6 +68,17 @@ submitBtn.addEventListener("click", (e) => {
     consentError.style.display = "none";
   }
   if (isValid) {
+    localStorage.setItem(
+      "formdata",
+      JSON.stringify({
+      "First name": firstname.value,
+      "Last name": lastname.value,
+      "Email Address": email.value,
+      "message": message.value,
+      "checkbox": consent.checked,
+      "radioSelection": Array.from(radioBtns).find((btn) => btn.checked)?.id || ""
+      })
+    );
     successModal.style.top = "20px";
     successModal.classList.add("shake");
     setTimeout(() => {
@@ -67,6 +94,5 @@ document
     div.addEventListener("click", () => {
       const radioBtn = div.querySelector('input[type="radio"]');
       radioBtn.checked = true;
-      console.log(radioBtn);
     });
   });
